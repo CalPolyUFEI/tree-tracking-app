@@ -3,6 +3,10 @@ import { IFeature, IQueryFeaturesResponse, queryFeatures } from '@esri/arcgis-re
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import imageNotFound from '../../../assets/images/no-image-found.jpg';
 import './RecentlyPlantedCard.scss';
+import rawTreeData from './tree_data.json';
+
+type TreeDataMapping = Record<string, string>;
+const idNameMapping = rawTreeData as TreeDataMapping;
 
 interface ImageInfo {
   /**
@@ -62,7 +66,17 @@ async function getData(page: number, pageLength: number): Promise<IFeature[]>  {
     resultOffset: page,
     resultRecordCount: pageLength,
     // Only want these fields
-    outFields: ['objectid', 'name_publicly', 'date_planted', 'verified_tree_species', 'tree_species', 'verified'],
+    outFields: [
+      'objectid',
+      'name_publicly',
+      'date_planted',
+      'verified_tree_species',
+      'tree_species',
+      'verified',
+      'contact_name2',
+      'contact_org2',
+      'known_species'
+    ],
     returnGeometry: false,
     orderByFields: "objectid DESC",
   }) as IQueryFeaturesResponse;
@@ -115,8 +129,14 @@ export async function retrieveRecentlyPlantedData(page: number, pageLength: numb
       objectid: +data.attributes.objectid,
       recorded_tree_species: data.attributes.tree_species as string,
       date_planted: data.attributes.date_planted as string,
-      verified_tree_species: data.attributes.verified_tree_species as string,
-      name_publicly: data.attributes.name_publicly as string,
+      verified_tree_species:
+        data.attributes.known_species &&
+        idNameMapping.hasOwnProperty(data.attributes.known_species)
+          ? idNameMapping[data.attributes.known_species]
+          : data.attributes.tree_species,
+      name_publicly: data.attributes.contact_org2
+        ? `${data.attributes.contact_name2}`
+        : data.attributes.name_publicly,
       img: images[data.attributes.objectid],
     };
   });
