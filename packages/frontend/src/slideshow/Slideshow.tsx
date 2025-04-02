@@ -20,7 +20,7 @@ const slideList: ISlide[] = [
   {
     slideView: (
       <BasicTextSlideView
-        text="As part of San Luis Obispo's initiative to be Carbon Neutral by 2023, we are collectively planting 10,000 trees by 2035."
+        text="As part of San Luis Obispo's initiative to be Carbon Neutral by 2035, we are collectively planting 10,000 trees."
       />),
     imageSrc: slide1Src,
     labelText: "MISSION"
